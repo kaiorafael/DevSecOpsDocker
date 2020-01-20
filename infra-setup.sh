@@ -16,6 +16,8 @@ OUTINTERNETGW="${RESOURCES}/internetgw.json"
 OUTROUTETABLE="${RESOURCES}/routetable.json"
 # SecurityGroups
 OUTSECURITYGP="${RESOURCES}/securitygroup.json"
+# SSH Key Pair
+OUTSSHKEY="${RESOURCES}/sshkeypair.pem"
 
 JQ=$(which jq)
 if [ -z $JQ ]; then
@@ -131,6 +133,20 @@ allow_INGRESSSGP() {
     done
 }
 
+create_SSHKey() {
+
+    # avoid errors when running multiple times
+    if [ -f ${OUTSSHKEY} ]; then rm -f ${OUTSSHKEY}; fi
+
+    aws ec2 create-key-pair \
+        --key-name DevSecOps \
+        --query 'KeyMaterial' \
+        --output text > ${OUTSSHKEY} \
+        ${REGIONOPT}
+    # permissions to use the key
+    chmod 400 ${OUTSSHKEY}
+}
+
 create_resources() {
     echo "Creating resources"
 
@@ -144,6 +160,7 @@ create_resources() {
     associate_PUBLICIP
     create_SECURITYGP
     allow_INGRESSSGP
+    create_SSHKey
 }
 
 delete_resources() {
