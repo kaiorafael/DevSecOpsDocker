@@ -19,6 +19,9 @@ OUTROUTETABLE="${RESOURCES}/routetable.json"
 OUTSECURITYGP="${RESOURCES}/securitygroup.json"
 # SSH Key Pair
 OUTSSHKEY="${RESOURCES}/sshkeypair.pem"
+SSHKEYNAME="DevSecOps"
+# EC2 instance
+EC2ID="${RESOURCES}/ec2id.json"
 
 JQ=$(which jq)
 if [ -z $JQ ]; then
