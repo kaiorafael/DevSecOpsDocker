@@ -63,3 +63,13 @@ get_ROUTETABLE() {
 get_SECURITYGP() {
     echo $(cat $OUTSECURITYGP | jq ".GroupId" | sed "s/\"//g")
 }
+
+usage_help() {
+    echo -e "\n"
+    echo "./$0"
+    echo -e "\nOptions:"
+    echo -e "\tcreate"
+    echo -e "\tdelete"
+    echo -e "\n"
+    exit -1
+}
