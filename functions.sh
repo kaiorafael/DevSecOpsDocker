@@ -64,6 +64,10 @@ get_SECURITYGP() {
     echo $(cat $OUTSECURITYGP | jq ".GroupId" | sed "s/\"//g")
 }
 
+get_EC2ID() {
+    echo $(cat ${EC2ID} | jq ".Reservations[].Instances[].InstanceId" | sed "s/\"//g")
+}
+
 usage_help() {
     echo -e "\n"
     echo "./$0"

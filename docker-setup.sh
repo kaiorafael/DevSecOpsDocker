@@ -28,6 +28,13 @@ create_resources() {
     update_instanceIDInfo
 }
 
+delete_resources() {
+    echo "Deleting: $(get_EC2ID)"
+    aws ec2 terminate-instances \
+        --instance-id $(get_EC2ID) \
+        ${REGIONOPT}
+}
+
 #### Main code
 if [ $# -ne 1 ]; then usage_help; fi
 
