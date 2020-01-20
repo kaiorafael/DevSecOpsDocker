@@ -12,3 +12,4 @@ php:
     image: php:7-fpm
     volumes:
         - ./content:/content
+        - ./secure-php.ini:/usr/local/etc/php/conf.d/secure-php.ini
