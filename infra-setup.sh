@@ -171,13 +171,38 @@ delete_resources() {
     aws ec2 delete-subnet --subnet-id $(get_SUBNETID $OUTSUBNET1) ${REGIONOPT}
     aws ec2 delete-subnet --subnet-id $(get_SUBNETID $OUTSUBNET2) ${REGIONOPT}
 
+    echo "Deleting SSH Key"
+    aws ec2 delete-key-pair --key-name DevSecOps ${REGIONOPT}
+
+    echo "Deleting routing tables"
     aws ec2 delete-route-table --route-table-id $(get_ROUTETABLE) ${REGIONOPT}
     aws ec2 detach-internet-gateway --internet-gateway-id $(get_INTERNETGW) --vpc-id $(get_VPCID) ${REGIONOPT}
     aws ec2 delete-internet-gateway --internet-gateway-id $(get_INTERNETGW) ${REGIONOPT}
+
+    echo "Deleting VPC"
     aws ec2 delete-vpc --vpc-id $(get_VPCID) ${REGIONOPT}
 
 }
 
-create_resources
-#sleep 30
-#delete_resources
+usage_help() {
+    echo -e "\n"
+    echo "./$0"
+    echo -e "\nOptions:"
+    echo -e "\tcreate"
+    echo -e "\tdelete"
+    echo -e "\n"
+    exit -1
+}
+
+#### Main code
+if [ $# -ne 1 ]; then usage_help; fi
+
+if [ "x${1}" == "xcreate" ]; then
+    echo "Creating Resources"
+    create_resources
+elif [ "x${1}" == "xdelete" ]; then
+    echo "Cleaning Infra"
+    delete_resources
+else
+    usage_help
+fi
