@@ -1,44 +1,10 @@
-
-#####Variables
-REGION="eu-north-1"
-REGIONOPT="--region ${REGION}"
-OUTFORMAT="--output json"
-RESOURCES="resources"
-
-####VPC
-OUTVPC="${RESOURCES}/vpc.json"
-# Subnets
-OUTSUBNET1="${RESOURCES}/subnet1.json"
-OUTSUBNET2="${RESOURCES}/subnet2.json"
-# Internet GW
-OUTINTERNETGW="${RESOURCES}/internetgw.json"
-# Route table
-OUTROUTETABLE="${RESOURCES}/routetable.json"
-# SecurityGroups
-OUTSECURITYGP="${RESOURCES}/securitygroup.json"
-# SSH Key Pair
-OUTSSHKEY="${RESOURCES}/sshkeypair.pem"
-
-JQ=$(which jq)
-if [ -z $JQ ]; then
-    echo "I need JQ to run: https://stedolan.github.io/jq/"
-    exit -1
-fi
-
-if [ ! -d ${RESOURCES} ]; then
-    echo "You should create ${RESOURCES}"
-    echo "mkdir ${RESOURCES}"
-    exit -1
-fi
+# generic functions / variables
+. functions.sh
 
 create_VPC() {
     ### VPC Setup
     echo "Creating VPC"
     aws ec2 create-vpc --cidr-block 10.0.0.0/16 ${REGIONOPT} ${OUTFORMAT} > $OUTVPC
-}
-
-get_VPCID(){
-    echo $(cat $OUTVPC | jq ".Vpc.VpcId" | sed "s/\"//g")
 }
 
 create_SUBNETS() {
@@ -56,20 +22,8 @@ create_SUBNETS() {
         ${REGIONOPT} ${OUTFORMAT} > ${OUTSUBNET2}
 }
 
-get_SUBNETID() {
-    subnet=${1}
-    if [ -f $subnet ]; then
-        RESULT=$(cat ${subnet} | jq ".Subnet.SubnetId" | sed "s/\"//g")
-        echo $RESULT
-    fi
-}
-
 create_INTERNETGW() {
     aws ec2 create-internet-gateway ${REGIONOPT} ${OUTFORMAT} > ${OUTINTERNETGW}
-}
-
-get_INTERNETGW() {
-    echo $(cat $OUTINTERNETGW | jq ".InternetGateway.InternetGatewayId" | sed "s/\"//g")
 }
 
 attach_INTERNETGW() {
@@ -81,10 +35,6 @@ attach_INTERNETGW() {
 
 create_ROUTETABLE() {
     aws ec2 create-route-table --vpc-id $(get_VPCID) ${REGIONOPT} ${OUTFORMAT} > ${OUTROUTETABLE}
-}
-
-get_ROUTETABLE() {
-    echo $(cat $OUTROUTETABLE | jq ".RouteTable.RouteTableId" | sed "s/\"//g")
 }
 
 create_ROUTE() {
@@ -115,10 +65,6 @@ create_SECURITYGP() {
         --description "To manage SSH connection" \
         --vpc-id $(get_VPCID) ${REGIONOPT} \
         ${OUTFORMAT} > ${OUTSECURITYGP}
-}
-
-get_SECURITYGP() {
-    echo $(cat $OUTSECURITYGP | jq ".GroupId" | sed "s/\"//g")
 }
 
 allow_INGRESSSGP() {
