@@ -85,7 +85,7 @@ create_SSHKey() {
     if [ -f ${OUTSSHKEY} ]; then rm -f ${OUTSSHKEY}; fi
 
     aws ec2 create-key-pair \
-        --key-name DevSecOps \
+        --key-name ${SSHKEYNAME} \
         --query 'KeyMaterial' \
         --output text > ${OUTSSHKEY} \
         ${REGIONOPT}
@@ -118,7 +118,7 @@ delete_resources() {
     aws ec2 delete-subnet --subnet-id $(get_SUBNETID $OUTSUBNET2) ${REGIONOPT}
 
     echo "Deleting SSH Key"
-    aws ec2 delete-key-pair --key-name DevSecOps ${REGIONOPT}
+    aws ec2 delete-key-pair --key-name ${SSHKEYNAME} ${REGIONOPT}
 
     echo "Deleting routing tables"
     aws ec2 delete-route-table --route-table-id $(get_ROUTETABLE) ${REGIONOPT}
