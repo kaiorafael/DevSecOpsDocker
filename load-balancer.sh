@@ -87,5 +87,15 @@ delete_LB() {
     delete_TARGET_GROUP
 }
 
-#create_LB
-#delete_LB
+#### Main code
+if [ $# -ne 1 ]; then usage_help; fi
+
+if [ "x${1}" == "xcreate" ]; then
+    echo "Creating LB"
+    create_LB
+elif [ "x${1}" == "xdelete" ]; then
+    echo "Cleaning LB"
+    delete_LB
+else
+    usage_help
+fi
