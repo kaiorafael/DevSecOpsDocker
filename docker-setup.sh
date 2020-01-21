@@ -12,7 +12,7 @@ create_instances() {
         --instance-type t3.micro \
         --key-name ${SSHKEYNAME} \
         --security-group-ids $(get_SECURITYGP) \
-        --subnet-id $(get_SUBNETID $OUTSUBNET1) \
+        --subnet-id $(get_SUBNETID $OUTSUBNET2) \
         --user-data file://userdata.sh \
         ${REGIONOPT} ${OUTFORMAT} > ${EC2ID}
 
