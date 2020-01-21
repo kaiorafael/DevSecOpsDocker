@@ -128,7 +128,7 @@ create_resources() {
 
     ## NAT
     . natgw-setup.sh
-    #create_NAT
+    create_NAT
 
 }
 
@@ -136,7 +136,7 @@ delete_resources() {
 
     ## NAT
     . natgw-setup.sh
-    #delete_NAT
+    delete_NAT
 
     echo "Deleting resources"
     aws ec2 delete-security-group --group-id $(get_SECURITYGP) ${REGIONOPT}
@@ -154,6 +154,7 @@ delete_resources() {
     aws ec2 delete-route-table --route-table-id $(get_ROUTETABLE) ${REGIONOPT}
     aws ec2 detach-internet-gateway --internet-gateway-id $(get_INTERNETGW) --vpc-id $(get_VPCID) ${REGIONOPT}
     aws ec2 delete-internet-gateway --internet-gateway-id $(get_INTERNETGW) ${REGIONOPT}
+    sleep 20 #TODO add holder
 
     echo "Deleting VPC"
     aws ec2 delete-vpc --vpc-id $(get_VPCID) ${REGIONOPT}
