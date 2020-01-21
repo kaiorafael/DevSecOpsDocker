@@ -8,7 +8,8 @@ create_VPC() {
 }
 
 create_SUBNETS() {
-    # Subnet 1 and 2
+    # Subnet 1, 2 and 3
+    #TODO refact
     echo "Creating subnets"
     get_VPCID
     aws ec2 create-subnet --vpc-id $(get_VPCID) \
@@ -20,6 +21,11 @@ create_SUBNETS() {
         --cidr-block 10.0.2.0/24 \
         --availability-zone ${REGION}b \
         ${REGIONOPT} ${OUTFORMAT} > ${OUTSUBNET2}
+    
+        aws ec2 create-subnet --vpc-id $(get_VPCID) \
+        --cidr-block 10.0.3.0/24 \
+        --availability-zone ${REGION}c \
+        ${REGIONOPT} ${OUTFORMAT} > ${OUTSUBNET3}
 }
 
 create_INTERNETGW() {
@@ -46,15 +52,27 @@ create_ROUTE() {
 }
 
 associate_SUBNET() {
+    #TODO refact
     aws ec2 associate-route-table  \
         --subnet-id $(get_SUBNETID $OUTSUBNET1) \
+        --route-table-id $(get_ROUTETABLE) \
+        ${REGIONOPT}
+
+    aws ec2 associate-route-table  \
+        --subnet-id $(get_SUBNETID $OUTSUBNET3) \
         --route-table-id $(get_ROUTETABLE) \
         ${REGIONOPT}
 }
 
 associate_PUBLICIP() {
+    #TODO refact
     aws ec2 modify-subnet-attribute \
         --subnet-id $(get_SUBNETID $OUTSUBNET1) \
+        --map-public-ip-on-launch \
+        ${REGIONOPT}
+
+    aws ec2 modify-subnet-attribute \
+        --subnet-id $(get_SUBNETID $OUTSUBNET3) \
         --map-public-ip-on-launch \
         ${REGIONOPT}
 }
@@ -107,15 +125,27 @@ create_resources() {
     create_SECURITYGP
     allow_INGRESSSGP
     create_SSHKey
+
+    ## NAT
+    . natgw-setup.sh
+    #create_NAT
+
 }
 
 delete_resources() {
+
+    ## NAT
+    . natgw-setup.sh
+    #delete_NAT
+
     echo "Deleting resources"
     aws ec2 delete-security-group --group-id $(get_SECURITYGP) ${REGIONOPT}
 
     echo "Deleting Subnets"
+    #TODO refact
     aws ec2 delete-subnet --subnet-id $(get_SUBNETID $OUTSUBNET1) ${REGIONOPT}
     aws ec2 delete-subnet --subnet-id $(get_SUBNETID $OUTSUBNET2) ${REGIONOPT}
+    aws ec2 delete-subnet --subnet-id $(get_SUBNETID $OUTSUBNET3) ${REGIONOPT}
 
     echo "Deleting SSH Key"
     aws ec2 delete-key-pair --key-name ${SSHKEYNAME} ${REGIONOPT}
