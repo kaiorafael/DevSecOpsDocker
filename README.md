@@ -5,7 +5,7 @@ This is an example on how to apply DevSecOps using AWS. Please note that the cod
 
 In summary, the scripts will
 
-1. Create basic infrastructure such as VPC, Subnets, SSH keys
+1. Create basic infrastructure such as VPC, Subnets, SSH keys, NAT Gateway, Load Balancer
 2. Launch optimized Docker image 
 3. Hardening the OS and Docker application.
 
@@ -49,12 +49,6 @@ To create your infrastructure, please run:
 bash infra-setup.sh create
 ```
 
-In case the resources are not necessary anymore, you can clean it
-
-```sh
-bash infra-setup.sh delete
-```
-
 ### Preparing Docker
 
 To create your Docker web application, please run:
@@ -63,8 +57,18 @@ To create your Docker web application, please run:
 bash docker-setup.sh create
 ```
 
+Docker is running in Private Subnet (subnet 2), therfore there is a NAT Gateway in Subnet 1 and Route in Subnet 2. To have access to Docker App, you should use Load Balancer as described below:
+
+```sh
+bash load-balancer.sh create
+```
+
+### Cleaning the resources 
+
 In case the resources are not necessary anymore, you can clean it
 
 ```sh
+bash load-balancer.sh delete
 bash docker-setup.sh delete
+bash infra-setup.sh delete
 ```
